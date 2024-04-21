@@ -3,6 +3,7 @@ package com.example.mad_exam_3
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import com.example.mad_exam_3.GameView.Companion.screenRatioX
 import com.example.mad_exam_3.GameView.Companion.screenRatioY
 
@@ -55,6 +56,10 @@ class Player(gameView: GameView, screenY: Int, res: Resources) {
         playerCounter = (playerCounter + 1) % 4 // Loop back to the first frame after the last frame
 
         return currentFrame
+    }
+
+    fun getCollisionShape(): Rect {
+        return Rect(x, y, x + width, y + height)
     }
 
 
