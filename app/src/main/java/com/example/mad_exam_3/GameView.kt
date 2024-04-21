@@ -1,7 +1,10 @@
 package com.example.mad_exam_3
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
@@ -36,8 +39,12 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     private val random: Random
     private val bullets = mutableListOf<Bullet>()
     private val activity: GameActivity
+    private var prefs: SharedPreferences
 
     init {
+
+        prefs = activity.getSharedPreferences("game", Context.MODE_PRIVATE)
+
         this.activity = activity
         this.screenX = screenX
         this.screenY = screenY
@@ -51,6 +58,10 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
         background2.x = screenX
 
         player = Player(this, screenY, resources)
+
+        paint = Paint()
+        paint.textSize = 100f
+        paint.color = Color.WHITE
 
         enemys = Array(4) { Enemy(resources) }
 
@@ -77,6 +88,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     }
 
     private fun update(){
+        //background animation content
         background1.x -= (20 * screenRatioX).toInt()
         background2.x -= (20 * screenRatioX).toInt()
 
@@ -88,6 +100,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
             background2.x = screenX
         }
 
+        //player movement content
         if (player.isGoingUp) {
             player.y -= (25 * screenRatioY).toInt()
         } else {
@@ -100,6 +113,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
         if (player.y >= screenY - player.height)
             player.y = screenY - player.height
 
+        //player bullet content
         val trash = ArrayList<Bullet>()
 
         for (bullet in bullets) {
@@ -120,6 +134,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
 
         bullets.removeAll(trash)
 
+        //enemy content
         for(enemy in enemys){
             enemy.x -= (enemy.speed * screenRatioX).toInt()
 
@@ -146,25 +161,36 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
             val canvas: Canvas? = surfaceHolder.lockCanvas()
 
             if (canvas != null) {
+                //rendering the background
                 canvas.drawBitmap(background1.background, background1.x.toFloat(), background1.y.toFloat(), paint)
                 canvas.drawBitmap(background2.background, background2.x.toFloat(), background2.y.toFloat(), paint)
 
+                //rendering the enemies
                 for (enemy in enemys) {
                     // Update the position of enemies before drawing them
                     enemy.x -= (enemy.speed * screenRatioX).toInt()
                     canvas.drawBitmap(enemy.getBird(), enemy.x.toFloat(), enemy.y.toFloat(), paint)
                 }
 
+                canvas.drawText(score.toString() + "", screenX / 2f, 164f, paint)
+
+                //rendering game over actions
                 if (isGameOver) {
                     isPlaying = false
+                    //rendering GAME OVER text
+                    canvas.drawText("GAME OVER", screenX / 2.5f, screenY / 2f, paint)
+                    //rendering explotion animation
                     canvas.drawBitmap(player.getPlayer(), player.x.toFloat(), player.y.toFloat(), paint)
                     surfaceHolder.unlockCanvasAndPost(canvas)
+                    saveIfHighScore()
                     waitBeforeExiting()
                     return
                 }
 
+                //rendering the player
                 canvas.drawBitmap(player.getPlayer(), player.x.toFloat(), player.y.toFloat(), paint)
 
+                //rendering the bullet
                 for (bullet in bullets) {
                     canvas.drawBitmap(bullet.getBullet(), bullet.x.toFloat(), bullet.y.toFloat(), paint)
                 }
@@ -186,7 +212,11 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     }
 
     private fun saveIfHighScore() {
-
+        if (prefs.getInt("highscore", 0) < score) {
+            val editor = prefs.edit()
+            editor.putInt("highscore", score)
+            editor.apply()
+        }
     }
 
     fun resume(){
@@ -208,7 +238,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
         val action = event.actionMasked
 
         when (action) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> { // Handle additional pointers
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 val pointerIndexDown = event.actionIndex
                 if (event.getX(pointerIndexDown) < screenX / 2) {
                     player.isGoingUp = true
@@ -216,7 +246,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
                     player.toShoot++
                 }
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> { // Handle additional pointers
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 val pointerIndexUp = event.actionIndex
                 if (event.getX(pointerIndexUp) < screenX / 2) {
                     player.isGoingUp = false
@@ -229,7 +259,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     fun newBullet() {
         val bullet = Bullet(resources)
         bullet.x = player.x + player.width
-        bullet.y = player.y + (player.height/30)
+        bullet.y = player.y + (player.height/2.5).toInt()
         bullets.add(bullet)
     }
 
