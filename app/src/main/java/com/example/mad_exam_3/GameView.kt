@@ -19,6 +19,8 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     private var paint: Paint = Paint()
     private val player: Player
     private lateinit var enemys : Array<Enemy>
+    private var score = 0
+
     companion object {
         @JvmStatic
         var screenRatioX = 0f
@@ -31,6 +33,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     private var background2: Background
     private var surfaceHolder: SurfaceHolder = holder
     private val random: Random
+    private val bullets = mutableListOf<Bullet>()
 
     init {
         this.screenX = screenX
@@ -94,6 +97,26 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
         if (player.y >= screenY - player.height)
             player.y = screenY - player.height
 
+        val trash = ArrayList<Bullet>()
+
+        for (bullet in bullets) {
+            if (bullet.x > screenX)
+                trash.add(bullet)
+
+            bullet.x += (40 * screenRatioX).toInt()
+
+            for (enemy in enemys) {
+                if (Rect.intersects(enemy.getCollisionShape(), bullet.getCollisionShape())) {
+                    score++
+                    enemy.x = -500
+                    bullet.x = screenX + 500
+                    enemy.wasShot = true
+                }
+            }
+        }
+
+        bullets.removeAll(trash)
+
         for(enemy in enemys){
             enemy.x -= (enemy.speed * screenRatioX).toInt()
 
@@ -131,6 +154,10 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
 
                 canvas.drawBitmap(player.getPlayer(), player.x.toFloat(), player.y.toFloat(), paint)
 
+                for (bullet in bullets) {
+                    canvas.drawBitmap(bullet.getBullet(), bullet.x.toFloat(), bullet.y.toFloat(), paint)
+                }
+
                 surfaceHolder.unlockCanvasAndPost(canvas)
             }
         }
@@ -153,17 +180,34 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> if (event.x < screenX / 2) {
-                player.isGoingUp = true
-            }
+        val action = event.actionMasked
 
-            MotionEvent.ACTION_UP -> {
-                player.isGoingUp = false
+        when (action) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> { // Handle additional pointers
+                val pointerIndexDown = event.actionIndex
+                if (event.getX(pointerIndexDown) < screenX / 2) {
+                    player.isGoingUp = true
+                } else {
+                    player.toShoot++
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> { // Handle additional pointers
+                val pointerIndexUp = event.actionIndex
+                if (event.getX(pointerIndexUp) < screenX / 2) {
+                    player.isGoingUp = false
+                }
             }
         }
         return true
     }
+
+    fun newBullet() {
+        val bullet = Bullet(resources)
+        bullet.x = player.x + player.width
+        bullet.y = player.y + (player.height/44)
+        bullets.add(bullet)
+    }
+
 
 
 }

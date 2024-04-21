@@ -20,6 +20,7 @@ class Player(gameView: GameView, screenY: Int, res: Resources) {
     var y: Int = 0
     var playerCounter = 0
     var isGoingUp = false
+    var toShoot = 0
 
     init {
         this.gameView = gameView
@@ -46,6 +47,12 @@ class Player(gameView: GameView, screenY: Int, res: Resources) {
     }
 
     fun getPlayer(): Bitmap{
+
+        if(toShoot != 0){
+            toShoot--
+            gameView.newBullet()
+        }
+
         val currentFrame = when (playerCounter) {
             0 -> player1
             1 -> player2
