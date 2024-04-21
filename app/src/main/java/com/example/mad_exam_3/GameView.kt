@@ -1,5 +1,6 @@
 package com.example.mad_exam_3
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
@@ -34,8 +35,10 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     private var surfaceHolder: SurfaceHolder = holder
     private val random: Random
     private val bullets = mutableListOf<Bullet>()
+    private val activity: GameActivity
 
     init {
+        this.activity = activity
         this.screenX = screenX
         this.screenY = screenY
 
@@ -152,6 +155,14 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
                     canvas.drawBitmap(enemy.getBird(), enemy.x.toFloat(), enemy.y.toFloat(), paint)
                 }
 
+                if (isGameOver) {
+                    isPlaying = false
+                    canvas.drawBitmap(player.getPlayer(), player.x.toFloat(), player.y.toFloat(), paint)
+                    surfaceHolder.unlockCanvasAndPost(canvas)
+                    waitBeforeExiting()
+                    return
+                }
+
                 canvas.drawBitmap(player.getPlayer(), player.x.toFloat(), player.y.toFloat(), paint)
 
                 for (bullet in bullets) {
@@ -161,6 +172,20 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
                 surfaceHolder.unlockCanvasAndPost(canvas)
             }
         }
+
+    }
+
+    private fun waitBeforeExiting() {
+        try {
+            Thread.sleep(3000)
+            activity.startActivity(Intent(activity, MainActivity::class.java))
+            activity.finish()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun saveIfHighScore() {
 
     }
 
@@ -204,10 +229,8 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     fun newBullet() {
         val bullet = Bullet(resources)
         bullet.x = player.x + player.width
-        bullet.y = player.y + (player.height/44)
+        bullet.y = player.y + (player.height/30)
         bullets.add(bullet)
     }
-
-
 
 }
