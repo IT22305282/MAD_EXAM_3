@@ -67,6 +67,29 @@ class MainActivity : AppCompatActivity() {
         highScoreTxt.setText("HighScore: " + prefs.getInt("highscore", 0))
 
 
+        //setting up shoot sound
+        var isMute = prefs.getBoolean("isMute", false)
+
+        val volumeCtrl = findViewById<ImageView>(R.id.volumeCtrl)
+
+        if (isMute) {
+            volumeCtrl.setImageResource(R.drawable.volume_down)
+        } else {
+            volumeCtrl.setImageResource(R.drawable.volume_up)
+        }
+
+        volumeCtrl.setOnClickListener {
+            isMute = !isMute
+            if (isMute) {
+                volumeCtrl.setImageResource(R.drawable.volume_down)
+            } else {
+                volumeCtrl.setImageResource(R.drawable.volume_up)
+            }
+
+            val editor = prefs.edit()
+            editor.putBoolean("isMute", isMute)
+            editor.apply()
+        }
 
     }
 }

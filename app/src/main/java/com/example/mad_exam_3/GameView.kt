@@ -7,6 +7,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.SoundPool
+import android.os.Build
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -40,6 +44,8 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     private val bullets = mutableListOf<Bullet>()
     private val activity: GameActivity
     private var prefs: SharedPreferences
+    val soundPool: SoundPool
+    val sound: Int
 
     init {
 
@@ -48,6 +54,21 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
         this.activity = activity
         this.screenX = screenX
         this.screenY = screenY
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val audioAttributes = AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .build()
+
+            soundPool = SoundPool.Builder()
+                .setAudioAttributes(audioAttributes)
+                .build()
+        } else {
+            soundPool = SoundPool(1, AudioManager.STREAM_MUSIC, 0)
+        }
+
+        sound = soundPool.load(activity, R.raw.shoot, 1)
 
         screenRatioX = MainActivity.GAME_WIDTH.toFloat() / screenX
         screenRatioY = MainActivity.GAME_HEIGHT.toFloat() / screenY
@@ -257,6 +278,9 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
     }
 
     fun newBullet() {
+
+        if (!prefs.getBoolean("isMute", false)) soundPool.play(sound, 1f, 1f, 0, 0, 1f)
+
         val bullet = Bullet(resources)
         bullet.x = player.x + player.width
         bullet.y = player.y + (player.height/2.5).toInt()
