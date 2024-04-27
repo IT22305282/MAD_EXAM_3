@@ -84,7 +84,7 @@ class GameView(activity: GameActivity, screenX: Int, screenY: Int): SurfaceView(
         paint.textSize = 100f
         paint.color = Color.WHITE
 
-        enemys = Array(4) { Enemy(resources) }
+        enemys = Array(3) { Enemy(resources) }
 
         random = Random()
 
