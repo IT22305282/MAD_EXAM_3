@@ -67,7 +67,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Game will get over if you get hit by an enemy."
+            android:text="Game will end if you get hit by an enemy."
             android:textSize="25sp"
             android:textColor="@color/white"
             android:layout_margin="10dp"
@@ -76,7 +76,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Game will get over if an enemy pass your spaceship."
+            android:text="Game will end if an enemy pass your spaceship."
             android:textSize="25sp"
             android:textColor="@color/white"
             android:layout_margin="10dp"
