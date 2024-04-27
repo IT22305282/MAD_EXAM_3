@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             volumeCtrl.setImageResource(R.drawable.volume_up)
         }
 
+        //setting up mute button
         volumeCtrl.setOnClickListener {
             isMute = !isMute
             if (isMute) {
@@ -89,6 +90,16 @@ class MainActivity : AppCompatActivity() {
             val editor = prefs.edit()
             editor.putBoolean("isMute", isMute)
             editor.apply()
+        }
+
+        val instructions = findViewById<TextView>(R.id.instructionsBtn)
+
+        instructions.setOnClickListener {
+
+            val intent = Intent(this, Instructions::class.java)
+
+            startActivity(intent)
+
         }
 
     }

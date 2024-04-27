@@ -11,7 +11,9 @@ class Background(screenX: Int, screenY: Int, res: Resources) {
     var background: Bitmap
 
     init {
+        //background asset
         val backgroundBitmap = BitmapFactory.decodeResource(res, R.drawable.space2)
+
         background = Bitmap.createScaledBitmap(backgroundBitmap, screenX, screenY, false)
     }
 }

@@ -20,6 +20,7 @@ class Bullet (res: Resources) {
     var bulletCounter = 0
 
     init {
+        //bullet assets
         bullet1 = BitmapFactory.decodeResource(res, R.drawable.shot1)
         bullet2 = BitmapFactory.decodeResource(res, R.drawable.shot2)
         bullet3 = BitmapFactory.decodeResource(res, R.drawable.shot3)
@@ -37,6 +38,7 @@ class Bullet (res: Resources) {
         bullet4 = Bitmap.createScaledBitmap(bullet4, width, height,false)
     }
 
+    //return Bitmaps to work as an animation
     fun getBullet() : Bitmap{
         when(bulletCounter){
             1 -> {

@@ -22,6 +22,7 @@ class Enemy(res: Resources) {
     var enemy4: Bitmap
 
     init {
+        //enemy assets
         enemy1 = BitmapFactory.decodeResource(res, R.drawable.enemy1)
         enemy2 = BitmapFactory.decodeResource(res, R.drawable.enemy2)
         enemy3 = BitmapFactory.decodeResource(res, R.drawable.enemy3)
@@ -30,6 +31,7 @@ class Enemy(res: Resources) {
         width = enemy1.width
         height = enemy1.height
 
+        //increasing the enemy size
         width = (width * 1.5).toInt()
         height = (height * 1.5).toInt()
 
@@ -44,6 +46,7 @@ class Enemy(res: Resources) {
         y = -height
     }
 
+    //return Bitmaps to work as an animation
     fun getBird(): Bitmap {
         when (enemyCounter) {
             1 -> {

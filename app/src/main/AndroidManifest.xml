@@ -13,9 +13,13 @@
         android:theme="@style/Theme.MAD_EXAM_3"
         tools:targetApi="31">
         <activity
-            android:name=".GameActivity"
+            android:name=".Instructions"
             android:exported="false"
             android:screenOrientation="landscape"/>
+        <activity
+            android:name=".GameActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -25,6 +25,7 @@ class Player(gameView: GameView, screenY: Int, res: Resources) {
     init {
         this.gameView = gameView
 
+        //player assets
         player1 = BitmapFactory.decodeResource(res, R.drawable.player1)
         player2 = BitmapFactory.decodeResource(res, R.drawable.player2)
         player3 = BitmapFactory.decodeResource(res, R.drawable.player3)
@@ -46,6 +47,7 @@ class Player(gameView: GameView, screenY: Int, res: Resources) {
 
     }
 
+    //return Bitmaps to work as an animation
     fun getPlayer(): Bitmap{
 
         if(toShoot != 0){
